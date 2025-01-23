@@ -57,12 +57,15 @@ if (!token) {
     console.error("No token found in localStorage. Authorization will fail.");
 }
 window.addEventListener("DOMContentLoaded",async()=>{
-    try{
+    
         if(token)
         {
             const decodeToken=parseJwt(token) //decoded token to knowits Premium useror Not
             console.log("decodedToken",decodeToken)
             const userId=decodeToken.userId
+
+            const fetchmessage=async()=>{
+                try{
             const response = await axios.get("http://localhost:5000/chat/message",{
                 headers: { 'Authorization':token }
             });
@@ -79,10 +82,19 @@ window.addEventListener("DOMContentLoaded",async()=>{
             div.appendChild(li);
         });
 
-        }
+        
 
-    }catch(err)
-    {
-        console.error("Error fetching messages:", err);
+        }catch(err)
+        {
+            console.error("Error fetching messages:", err);
+        }
+            } 
+            
+        //Call the function every 2 seconds to update messages
+        setInterval(fetchmessage, 2000);
+    } else {
+        console.error("No token found. User not authorized.");
     }
+        
+       
 })
