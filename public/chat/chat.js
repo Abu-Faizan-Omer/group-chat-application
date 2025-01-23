@@ -1,3 +1,15 @@
+function saveToLocalStorage(messageinput){
+    const messages=JSON.parse(localStorage.getItem('messages')) || []
+
+    //Add to messages
+    messages.push(messageinput)
+    if(messages.length > 20)
+    {
+        messages.shift() //remove from the last
+    }
+    localStorage.setItem('messages',JSON.stringify(messages))
+}
+
 
 /// Example of sending a message
 document.getElementById("form").addEventListener("submit", async (event) => {
@@ -21,6 +33,8 @@ document.getElementById("form").addEventListener("submit", async (event) => {
         });
         if (response.status === 201) {
             alert(response.data.message);
+            
+            saveToLocalStorage(response.data.data)  //save to localstorage
         }
         console.log('Message sent:', response.data);
         displayMessage(response.data.data);  // Display the sent message
@@ -52,10 +66,43 @@ function parseJwt (token) {
 
     return JSON.parse(jsonPayload);
 }
+
 const token = localStorage.getItem('token');
 if (!token) {
     console.error("No token found in localStorage. Authorization will fail.");
 }
+
+// function loadFromLocalStorage(){
+//     const messages=localStorage.getItem('messages') || []
+//     const div=document.getElementById("chatting")
+//     div.innerHTML=""
+
+//     messages.forEach(msg=>{
+//         const li=document.createElement("li")
+//         li.textContent=`${msg.userId}  :  ${msg.message}`
+//         div.append(li)
+//     })
+// }
+function loadFromLocalStorage() {
+    // Get messages from localStorage, or set to an empty array if nothing is found
+    const messages = JSON.parse(localStorage.getItem('messages')) || [];  // If no messages, default to []
+
+    const div = document.getElementById("chatting");
+    div.innerHTML = "";  // Clear existing messages
+
+    // Ensure messages is an array before calling forEach
+    if (Array.isArray(messages)) {  //check it is array or not
+        messages.forEach(msg => {
+            const li = document.createElement("li");
+            li.textContent = `${msg.userId}: ${msg.message}`;
+            div.append(li);
+        });
+    } else {
+        console.error("Expected 'messages' to be an array, but found:", messages);
+    }
+}
+
+
 window.addEventListener("DOMContentLoaded",async()=>{
     
         if(token)
@@ -64,37 +111,56 @@ window.addEventListener("DOMContentLoaded",async()=>{
             console.log("decodedToken",decodeToken)
             const userId=decodeToken.userId
 
-            const fetchmessage=async()=>{
-                try{
-            const response = await axios.get("http://localhost:5000/chat/message",{
-                headers: { 'Authorization':token }
+            loadFromLocalStorage()
+
+    //         const fetchmessage=async()=>{
+    //             try{
+    //         const response = await axios.get("http://localhost:5000/chat/message",{
+    //             headers: { 'Authorization':token }
+    //         });
+    //     const messages = response.data.data
+    //     console.log("messages==response.data",messages)
+    //     // Save the new messages to localStorage and display them
+    //     messages.forEach(msg => {
+    //         saveToLocalStorage(msg);
+    //         displayMessage(msg);
+    //     });
+    //     }catch(err)
+    //     {
+    //         console.error("Error fetching messages:", err);
+    //     }
+    //  }      
+    
+    async function fetchmessage() {
+        // Get the most recent message from localStorage
+        const lastMessage = JSON.parse(localStorage.getItem('messages'))?.[0]; 
+    
+        try {
+            // Send a request to get new messages from the server, only after the last message ID
+            const response = await axios.get("http://localhost:5000/chat/message", {
+                headers: { 'Authorization': localStorage.getItem('token') },
+                params: { afterMessageId: lastMessage?.id }  // Send the ID of the last message to fetch new ones
             });
-        const messages = response.data.data
-        console.log("messages==response.data",messages)
-
-        // Display all fetched messages
-        const div = document.getElementById("chatting");
-        div.innerHTML = "";  // Clear previous messages
-
-        messages.forEach(msg => {
-            const li = document.createElement("li");
-            li.textContent = `name:${msg.user.name} ,userId:${msg.userId}  ,message: ${msg.message}`;
-            div.appendChild(li);
-        });
-
-        
-
-        }catch(err)
-        {
-            console.error("Error fetching messages:", err);
+    
+            if (response.data.data && response.data.data.length > 0) {
+                // Add the new messages to localStorage
+                response.data.data.forEach(msg => {
+                    saveToLocalStorage(msg);  // Save only the new messages
+                    displayMessage(msg);      // Display the new messages on the screen
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching new messages:', error);
         }
-            } 
-            
+    }
+    
+
         //Call the function every 2 seconds to update messages
-        setInterval(fetchmessage, 2000);
+       // setInterval(fetchmessage, 2000);
+
+        // Call fetchmessage() to load new messages
+        await fetchmessage();
     } else {
         console.error("No token found. User not authorized.");
-    }
-        
-       
+    }      
 })
