@@ -9,6 +9,7 @@ const app=express()
 
 const userroutes=require('./routes/user')
 const chatroutes=require("./routes/chat")
+const grouproutes = require('./routes/group');
 
 //middleware
 app.use(cors())
@@ -23,12 +24,31 @@ app.use(bodyparser.json())
 
 const User=require("./models/user")
 const Chat=require("./models/chat")
+const Group = require('./models/group');
+const  GroupMember = require('./models/group-members');
+const GroupMessage = require('./models/group-message');
+
 
 app.use('/user',userroutes)
 app.use('/chat',chatroutes)
+app.use('/groups',grouproutes);
+
 
 User.hasMany(Chat)
 Chat.belongsTo(User)
+
+Group.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
+User.hasMany(Group, { foreignKey: 'createdBy', as: 'createdGroups' });
+
+Group.belongsToMany(User, { through: GroupMember });
+User.belongsToMany(Group, { through: GroupMember });
+
+GroupMessage.belongsTo(Group, { foreignKey: 'groupId' });
+Group.hasMany(GroupMessage, { foreignKey: 'groupId' });
+
+GroupMessage.belongsTo(User, { foreignKey: 'userId' });
+User.hasMany(GroupMessage, { foreignKey: 'userId' });
+
 
 sequelize.sync()
 .then((result)=>{

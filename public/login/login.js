@@ -12,7 +12,7 @@ form.addEventListener("submit",async(event)=>{
         alert(response.data.message);
         
         localStorage.setItem('token',response.data.token)
-         window.location.href= "../chat/chat.html"
+         window.location.href= "../chat/chatapp.html"
     }
 } catch (err) {
     console.log(err);

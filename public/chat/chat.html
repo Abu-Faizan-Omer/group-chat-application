@@ -7,12 +7,21 @@
 </head>
 <body>
     <h1>Welcome to chat app</h1>
-    <div id="chatting">Div</div>
-
-    <form id="form">
-        <input type="text" name="chat" id="message" placeholder="Enter your message" required />
-        <button type="submit" id="button">Send</button>
-      </form>
+    <div class="chat-header">ChatApp</div>
+  <div class="group-chat">
+    <button id="create-group-btn" class="btn btn-primary">Create Group</button>
+    <ul class="group-list" id="group-list"></ul>
+  </div>
+  <div class="chat-container">
+    <div class="message-area" id="message-area">
+      <!-- Messages will appear here -->
+    </div>
+    <div class="input-area">
+      <input type="text" id="chat-input" placeholder="Type a message...">
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+  
     
     <script src="../chat/chat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
