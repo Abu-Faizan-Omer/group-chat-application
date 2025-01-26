@@ -63,7 +63,7 @@ sendButton.addEventListener("click", async (event) => {
     }
 
     try {
-        const token=localStorage.getItem('token')
+        const token=localStorage.getItem('token')  // store at the time of login
         
         const response = await axios.post("http://localhost:5000/chat/send", 
              { message: chatInput },
@@ -94,7 +94,7 @@ function displayMessage(messageData) {
 
     lastDisplayedMessageId = messageData.id; // Update the last displayed message ID
 }
-
+//find group
 // Load messages from localStorage on page load
 window.addEventListener("DOMContentLoaded", async () => {
     if (token) {
@@ -121,6 +121,7 @@ window.addEventListener("DOMContentLoaded", async () => {
                         displayMessage(msg);        // Display the new messages on the screen
                     });
                 }
+               //loadGroups()
             } catch (error) {
                 console.error("Error fetching new messages:", error);
             }
@@ -131,7 +132,96 @@ window.addEventListener("DOMContentLoaded", async () => {
 
         // Fetch initial messages
         await fetchMessages();
+        
     } else {
         console.error("No token found. User not authorized.");
     }
 });
+
+//  group
+window.addEventListener("DOMContentLoaded",async()=>{
+    const groupSidebar = document.getElementById("group-sidebar");
+    const groupList = document.getElementById("group-list");
+    const createGroupBtn = document.getElementById("create-group-btn");
+    const messageArea = document.getElementById("message-area");
+    const chatInput = document.getElementById("chat-input");
+    const sendBtn = document.getElementById("send-btn");
+  
+    let currentGroupId = null;
+
+    // Load groups from server on page load
+async function fetchGroups() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        console.error("No token found. User not authorized.");
+        return;
+    }
+
+    try {
+        // Fetching groups from the server
+        const response = await axios.get("http://localhost:5000/groups/user-groups", {
+            headers: { Authorization: token },
+        });
+
+        if (response.status === 200) {
+            const groups = response.data.groups;
+            console.log("groups ",response)
+
+            const grpList = document.getElementById("group-list");
+            grpList.innerHTML = ""; // Clear existing groups
+
+            // Loop through each group and create a list item for it
+            groups.forEach((group) => {
+                const groupElement = document.createElement("li");
+                groupElement.textContent = group.name;
+                groupElement.dataset.groupId = group.id;
+                // Add event listener for click to load group messages
+                groupElement.addEventListener("click", () => loadGroupMessages(group.id, group.isAdmin));
+                grpList.appendChild(groupElement);
+            });
+        }
+    } catch (error) {
+        console.error("Error loading groups:", error);
+    }
+}
+
+    // Load messages for a specific group
+function loadGroupMessages(groupId,isadmin) {
+    localStorage.setItem('isAdmin',isadmin);
+    localStorage.setItem('groupid',groupId);
+    window.location.href = '../chat/testing.html';
+  }
+
+  
+//group create
+const createGrpBtn=document.getElementById("create-group-btn")
+createGrpBtn.addEventListener("click",async()=>{
+      const groupName=prompt("Enter a Group name")
+      if(!groupName)
+      {
+        alert("Groupname cannot be empty")
+        return
+      }
+      const token=localStorage.getItem('token')
+      console.log("token hai ",token)
+      try{
+      const response=await axios.post("http://localhost:5000/groups/create",
+        { name: groupName }, // Send group name in body
+        { headers: { 'Authorization': token } }) // Send token as a header
+        if(response.status==201)
+        {
+            console.log("grp created succesfull")
+            alert('Group created successfully')
+
+            const grpList=document.getElementById("group-list")
+            const groupelement=document.createElement("Li")
+            groupelement.textContent=groupName
+            grpList.appendChild(groupelement)
+        }
+    }catch(err){
+        console.log('err',err)
+        alert("Not created group succesfully")
+    } 
+})
+fetchGroups();
+})

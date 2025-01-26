@@ -28,23 +28,34 @@ exports.postmessage=async (req, res) => {
     }
   }
 
-  exports.getmessage = async (req, res, next) => {
+  exports.getmessage = async (req, res) => {
     try {
-        console.log("User ID from JWT:", req.user.id);  // Debugging line
+        console.log("User ID from JWT:", req.user.id);
 
-        const person = await Chat.findAll({
-            where: { userId: req.user.id },
-            include: [{ model: User, attributes: ['name'] }] // Include user details
-        });
+        // Fetch afterMessageId from query params (if available)
+        const afterMessageId = req.query.afterMessageId || 0; // Default to 0 if no ID is passed
+        console.log("afterMessageId:", afterMessageId);
 
-        if (person.length === 0) {
-            return res.status(404).json({ message: "No messages found" });
+        // Query condition: Fetch messages after the afterMessageId
+        const whereCondition = { userId: req.user.id };
+        if (afterMessageId) {
+            whereCondition.id = { [sequelize.Op.gt]: afterMessageId }; // Find messages with ID greater than afterMessageId
         }
 
-        res.status(200).json({ message: "Messages found", data: person });
+        // Fetch messages with pagination if needed
+        const messages = await Chat.findAll({
+            where: whereCondition,
+            include: [{ model: User, attributes: ['name'] }],
+            order: [['createdAt', 'ASC']], // Order by createdAt timestamp
+        });
+
+        if (messages.length === 0) {
+            return res.status(404).json({ message: "No new messages found" });
+        }
+
+        res.status(200).json({ message: "Messages fetched successfully", data: messages });
     } catch (err) {
         console.error("Error fetching messages:", err);
-        res.status(400).json({ message: "Error while fetching messages" });
+        res.status(400).json({ message: "Error while fetching messages", error: err });
     }
 };
-
