@@ -1,3 +1,4 @@
+console.log("js check")
 const form=document.getElementById("form")
 form.addEventListener("submit",async(event)=>{
     try{
@@ -12,7 +13,7 @@ form.addEventListener("submit",async(event)=>{
         alert(response.data.message);
         
         localStorage.setItem('token',response.data.token)
-         window.location.href= "../chat/chat.html"
+         window.location.href= "./chatapp"
     }
 } catch (err) {
     console.log(err);

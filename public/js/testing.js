@@ -1,130 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat Room</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js" crossorigin="anonymous"></script>
-  <!-- <style>
-    body {
-      background-color: #f1f5f9;
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .chat-header {
-      background: linear-gradient(to right, #6FAAFF, #955DFF);
-      color: #fff;
-      text-align: center;
-      padding: 15px 0;
-      font-size: 24px;
-      font-weight: 600;
-    }
-    .chat-container {
-      max-width: 600px;
-      margin: 20px auto;
-      display: flex;
-      flex-direction: column;
-      height: 80vh;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      background-color: #fff;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-    .message-area {
-      flex: 1;
-      padding: 15px;
-      overflow-y: auto;
-    }
-    .message-area::-webkit-scrollbar {
-      width: 5px;
-    }
-    .message-area::-webkit-scrollbar-thumb {
-      background-color: #6FAAFF;
-      border-radius: 5px;
-    }
-    .message {
-      margin-bottom: 10px;
-      padding: 8px 12px;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-    .message.join {
-      background-color: #e3fcec;
-      color: #1a7c37;
-    }
-    .message.chat {
-      background-color: #e7f3ff;
-      color: #215da1;
-    }
-    .input-area {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      border-top: 1px solid #ddd;
-      background-color: #f9f9f9;
-    }
-    .input-area input {
-      flex: 1;
-      border: 1px solid #ddd;
-      border-radius: 20px;
-      padding: 10px 15px;
-      font-size: 14px;
-    }
-    .input-area button {
-      margin-left: 10px;
-      background-color: #6FAAFF;
-      color: #fff;
-      border: none;
-      border-radius: 20px;
-      padding: 8px 20px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .input-area button:hover {
-      background-color: #955DFF;
-    }
-    @media (max-width: 576px) {
-      .chat-container {
-        height: 90vh;
-        margin: 10px;
-      }
-      .chat-header {
-        font-size: 20px;
-        padding: 10px 0;
-      }
-      .message {
-        font-size: 12px;
-      }
-      .input-area input {
-        font-size: 12px;
-      }
-      .input-area button {
-        font-size: 12px;
-        padding: 5px 15px;
-      }
-    }
-  </style> -->
-</head>
-<body>
-  <div class="chat-header">Chat Room</div>
-  <div class="chat-container">c
-    <!-- The Add Member button will be added dynamically by JavaScript -->
-    <!-- Chat Area -->
-    <div class="message-area" id="message-area">m
-      <!-- Messages will appear here -->
-    </div>
-    <div class="input-area">
-      <input type="text" id="message-input" placeholder="Type your message...">
-      <button type="button" class="btn btn-primary" id="send-btn">Send</button>
-    </div>
-  </div>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
+ console.log("testing check")
+ document.addEventListener('DOMContentLoaded', function () {
       const messageArea = document.getElementById('message-area');
       const messageInput = document.getElementById('message-input');
       const sendButton = document.getElementById('send-btn');
@@ -182,7 +57,7 @@
           let currentChatId = localStorage.getItem('groupid');
           if (phoneNo && currentChatId) {
             const payload = {
-              phoneNo: phoneNo,
+              phonenumber: phoneNo,
               groupId: currentChatId
             };
             axios.post(`http://localhost:5000/groups/add-member`, payload, {
@@ -207,6 +82,3 @@
       // Update chat every 1 second
       //setInterval(loadChat, 1000);
     });
-  </script>
-</body>
-</html>

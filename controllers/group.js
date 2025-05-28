@@ -87,6 +87,8 @@ exports.getUserGroups = async (req, res) => {
 exports.addMember = async (req, res) => {
     try {
         const { phonenumber, groupId } = req.body;
+        console.log("Adding member with phone:", phonenumber, "to group:", groupId);
+
 
         // Ensure the admin user is not trying to add themselves
         if (req.user.phonenumber === phonenumber) {

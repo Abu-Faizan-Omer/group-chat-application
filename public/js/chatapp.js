@@ -1,4 +1,4 @@
-
+console.log("js check")
 document.addEventListener('DOMContentLoaded', function () {
     const messageArea = document.getElementById('message-area');
     const chatInput = document.getElementById('chat-input');
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const token = localStorage.getItem('token');
       if (!token) {
         alert('You need to log in to view messages.');
-        window.location.href = '../Login/login.html';
+        window.location.href = './Login';
         return;
       }
   
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function loadGroupMessages(groupId,isadmin) {
       localStorage.setItem('isAdmin',isadmin);
       localStorage.setItem('groupid',groupId);
-      window.location.href = './testing.html';
+      window.location.href = './testing';
     }
   
     // Create a new group

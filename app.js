@@ -15,12 +15,7 @@ const grouproutes = require('./routes/group');
 app.use(cors())
 app.use(bodyparser.urlencoded({extended:true}))
 app.use(bodyparser.json())
-
-// app.use((req,res)=>{
-//     console.log('urlll',req.url)
-//     res.sendFile(path.join(__dirname,`public/${req.url}`))
-// })
-//app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const User=require("./models/user")
 const Chat=require("./models/chat")
@@ -49,6 +44,21 @@ Group.hasMany(GroupMessage, { foreignKey: 'groupId' });
 GroupMessage.belongsTo(User, { foreignKey: 'userId' });
 User.hasMany(GroupMessage, { foreignKey: 'userId' });
 
+// Serve home page
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, 'views','signup.html'));  // Home page is home.html
+});
+
+// Serve HTML files dynamically from /views folder
+app.get("/:page", (req, res) => {
+    const page = req.params.page;
+    res.sendFile(path.join(__dirname, 'views', `${page}.html`), (err) => {
+        if (err) {
+            res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+        }
+    });
+});
+
 
 sequelize.sync()
 .then((result)=>{
@@ -60,4 +70,3 @@ sequelize.sync()
     console.log(`Server has some issue `,err)
 })
 
-//this is second sighnup page
